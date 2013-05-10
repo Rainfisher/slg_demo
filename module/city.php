@@ -92,7 +92,7 @@ class Module_City extends Module_Abstract
         if (! $rs || ($user_id && $rs['user_id'] != $user_id)) {
             $this->error('city.not.yours OR city.not.exist');
         }
-        $this->event->transaction(&$rs);
+        $this->event->transaction($rs);
         $rs['food'] = (int) $rs['food'];
         return $rs;
     }

@@ -5,7 +5,7 @@ class Module_Event extends Module_Abstract
 
     static $events;
 
-    function transaction ($city, $end_time = null)
+    function transaction (&$city, $end_time = null)
     {
         if (! $end_time) {
             $end_time = $this->time();
@@ -24,13 +24,13 @@ class Module_Event extends Module_Abstract
             if ($event['time'] > $end_time) {
                 break;
             }
-            $this->dealFoodCost(&$city, $event);
+            $this->dealFoodCost($city, $event);
             $method_name = 'deal' . $event['type'];
             if (method_exists($this, $method_name)) {
                 call_user_func(array(
                     $this,
                     $method_name
-                ), &$city, $event);
+                ), $city, $event);
             }
             $city['updated_at'] = $event['time'];
         }
@@ -108,7 +108,7 @@ class Module_Event extends Module_Abstract
         return $list;
     }
 
-    function dealTax ($city, $event)
+    function dealTax (&$city, $event)
     {
         $gold = (int) ($city['population'] * $city['tax'] / 100);
         $city['gold'] += $gold;
@@ -119,6 +119,7 @@ class Module_Event extends Module_Abstract
         if ($city['population'] > $city['tax'] * Vender_Conf::TAX_POPULATION_LIMIT) {
             $population = -$population;
         }
+	$city['population'] += $population;
         if ($city['food'] <= 0) {
             $armys = $this->army->get($city['id']);
             foreach ($armys as $k => $army) {
@@ -175,7 +176,7 @@ class Module_Event extends Module_Abstract
         return $cost;
     }
 
-    function dealFoodCost ($city, $event)
+    function dealFoodCost (&$city, $event)
     {
         $time_gap = $event['time'] - $city['updated_at'];
         $cost = $this->getFoodCost($city);
