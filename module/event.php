@@ -27,10 +27,7 @@ class Module_Event extends Module_Abstract
             $this->dealFoodCost($city, $event);
             $method_name = 'deal' . $event['type'];
             if (method_exists($this, $method_name)) {
-                call_user_func(array(
-                    $this,
-                    $method_name
-                ), $city, $event);
+                $this->$method_name($city, $event);
             }
             $city['updated_at'] = $event['time'];
         }
@@ -119,7 +116,7 @@ class Module_Event extends Module_Abstract
         if ($city['population'] > $city['tax'] * Vender_Conf::TAX_POPULATION_LIMIT) {
             $population = -$population;
         }
-	$city['population'] += $population;
+        $city['population'] += $population;
         if ($city['food'] <= 0) {
             $armys = $this->army->get($city['id']);
             foreach ($armys as $k => $army) {
@@ -201,7 +198,7 @@ class Module_Event extends Module_Abstract
             );
             if ($battle['status'] == 0) {
                 $data['type'] = 'battle';
-            } else if ($battle['city_id'] == $city['id']){
+            } elseif ($battle['city_id'] == $city['id']) {
                 $data['type'] = 'return';
             }
             $list[] = $data;
